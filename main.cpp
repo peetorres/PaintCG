@@ -25,9 +25,11 @@ Poligono figura[100];
 int pol = 0; // Variavel de controle de poligonos
 int coordenada;
 float rn, gn, bn;
+int selecaoPoligono = 0;
 
 /*Menu de Funcoes*/
 void pegaCoordenada(int, int);
+bool verificaConvexo();
 void criarPoligono();
 void corCelula(int, int, float&, float&, float&);
 void verificaClique(int, int);
@@ -38,10 +40,41 @@ void displayInicial();
 void inicializaMenu();
 void menu(int item);
 void init();
+void limpaQuadro();
 
+void limparTudo(){
+    for(int i=0; i<pol; i++){
+        figura[i].vertices = 0;
+        figura[i].x[i] = 0;
+        figura[i].y[i] = 0;
+    }
+    limpaQuadro();
+    mod = 0;
+    pol = 0;
+}
 
+bool pontonoPoligono(int x, int y, int poli){
+    int i, j = figura[poli].vertices - 1 ;
+    bool oddNodes = false;
+    //cout << "Vertices do Poligono: " << figura[poli].vertices -1<< endl;
+    for (i=0; i<figura[poli].vertices; i++) {
+        if ((figura[poli].y[i]<y && figura[poli].y[j]>=y ||
+             figura[poli].y[j]<y && figura[poli].y[i]>=y)){
+            if (figura[poli].x[i]+(y-figura[poli].y[i])/(figura[poli].y[j]-figura[poli].y[i])*(figura[poli].x[j]-figura[poli].x[i])<x) {
+                oddNodes=!oddNodes;
+            }
+        }
+        j=i;
+    }
+    return oddNodes;
+}
 
-void pegaCoordenada(int coordx, int coordy){
+bool verificaConvexo(){
+    //for(int i=0; i<j)
+
+    return true;
+}
+void pegaCoordenada(int coordx, int coordy){ // Coord dos pontos do poligono
     float r, g, b;
     int xpos, ypos;
     xpos = coordx;
@@ -54,12 +87,12 @@ void pegaCoordenada(int coordx, int coordy){
         figura[pol].vertices = coordenada;
         figura[pol].x[coordenada-1] = coordx;
         figura[pol].y[coordenada-1] = coordy;
-        cout << "Salvou coordenada " << coordenada << endl;
-
+        //cout << "Salvou coordenada " << coordenada << endl;
         //cout << "Conferindo x: Atual = " << coordx << " Primeiro = " << figura.x[0] << endl;
         //cout << "Conferindo y: Atual = " << coordy << " Primeiro = " << figura.y[0] << endl;
     }
     if ((abs(coordx - figura[pol].x[0]) < 5 && abs(coordy - figura[pol].y[0]) < 5 ) && coordenada > 1) {
+        figura[pol].vertices --;
         criarPoligono();
         cout << "Poligono fechado!" << endl;
         coordenada = 0;
@@ -70,11 +103,12 @@ void pegaCoordenada(int coordx, int coordy){
     }
 }
 
-void criarPoligono(){
+void criarPoligono(){ // Cria poligono
     corCelula(coordx, coordy, rn,gn,bn);
     glBegin(GL_POLYGON);
         for(int i=0; i<figura[pol].vertices; i++){
             glVertex2f(figura[pol].x[i],600-figura[pol].y[i]);
+            displayControle[figura[pol].x[i]][600-figura[pol].y[i]] = pol + 1;
             //cout << "Desenhando vertice ponto x: " << figura[pol].x[i] << " ponto y: " << 600-figura[pol].y[i] << endl;
         }
     glEnd();
@@ -83,7 +117,7 @@ void criarPoligono(){
     cout << "Poligono " << pol << " desenhado." << endl;
 }
 
-void corCelula(int x, int y, float &r,float &g, float &b){
+void corCelula(int x, int y, float &r,float &g, float &b){ // Pega cor da Palheta (Cor atual)
     //cout << "X " << x << "  Y " << y << "  VALOR:" << cor << endl;
     if(x!=0){
         if (x < 60){
@@ -144,8 +178,17 @@ void verificaClique(int coordx, int coordy){
     xpos = coordx;
     ypos = coordy;
     //cout << "xpos: " << xpos << "ypos: " << ypos << endl;
-    corCelula(xpos,ypos,rn,gn,bn);
-    unit(xpos,600-ypos,rn,gn,bn); // Desenhando o pontinho na tela.
+    //corCelula(xpos,ypos,rn,gn,bn);
+    //unit(xpos,600-ypos,rn,gn,bn); // Desenhando o pontinho na tela.
+    if (mod == 2){
+        for(int i = pol - 1; i>=0; i--){
+            if(pontonoPoligono(coordx, coordy, i)){
+                cout << "Poligono Selecionado: " << i + 1 << endl;
+                selecaoPoligono = i+1;
+                break;
+            }
+        }
+    }
 }
 
 void gerenciaMouse(int button, int state, int x, int y){
@@ -153,11 +196,14 @@ void gerenciaMouse(int button, int state, int x, int y){
         coordx = x;
         coordy = y;
         //cout << "valores do mouse " << coordx << " e " << coordy << endl;
-        if (mod == 0){
+        if (mod == 0 || mod == 2){
             corCelula(coordx, coordy, rn, gn, bn);
         }
         if (mod == 1){
             pegaCoordenada(coordx, coordy);
+        }
+        if (mod == 2){
+            verificaClique(coordx, coordy);
         }
   }
 }
@@ -169,6 +215,17 @@ void unitCor(int x, int y,double r, double g, double b){
         glVertex2f(x+60,y);
         glVertex2f(x+60,y+60);
         glVertex2f(x,y+60);
+    glEnd();
+    glFlush();
+}
+
+void limpaQuadro(){
+    glColor3f(1.0,1.0,1.0);
+    glBegin(GL_POLYGON);
+        glVertex2f(60,0);
+        glVertex2f(600,0);
+        glVertex2f(600,600);
+        glVertex2f(60,600);
     glEnd();
     glFlush();
 }
@@ -254,6 +311,7 @@ void menu(GLint item){
         case 8:{
             cout << "Limpando tudo!" << endl;
             mod = 8;
+            limparTudo();
             break;
         }
         case 9:{
@@ -264,19 +322,17 @@ void menu(GLint item){
     }
 }
 
-void init(){ //substitui o init dos slides
-    //Define a cor de background da janela
+void init(){
     glClearColor (1.0, 1.0, 1.0, 0.0);
-    //define o sistema de visualizacao de projecao
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
     glOrtho (0.0 , COLUNAS , 0.0 , LINHAS , -1.0, 1.0);
     glMatrixMode(GL_MODELVIEW);
 
-    for(int i=0; i<10; i++){
-        figura[pol].vertices = 0;
-        figura[pol].x[0] = 0;
-        figura[pol].y[0] = 0;
+    for(int i=0; i<100; i++){
+        figura[i].vertices = 0;
+        figura[i].x[i] = 0;
+        figura[i].y[i] = 0;
     }
 }
 
