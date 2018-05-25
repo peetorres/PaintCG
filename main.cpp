@@ -12,11 +12,12 @@ using namespace std ;
 /*Variaveis Globais*/
 int COLUNAS = 600.0;
 int LINHAS = 600.0;
-GLint coordx, coordy;
+int coordx, coordy;
 int displayControle[600][600];
 int corPincel;
 
 /*Menu de Funcoes*/
+void pegaCoordenada(int, int);
 void corCelula(int, int, float&, float&, float&);
 void verificaClique(int, int);
 void gerenciaMouse(int , int , int , int );
@@ -27,31 +28,74 @@ void inicializaMenu();
 void menu(int item);
 void init();
 
+
+
+void pegaCoordenada(int coordx, int coordy){
+    float r, g, b;
+    int xpos, ypos;
+    xpos = coordx;
+    ypos = coordy;
+    cout << "xpos: " << xpos << "ypos: " << ypos << endl;
+    corCelula(xpos,ypos,r,g,b);
+    unit(xpos,600-ypos,r,g,b);
+    glFlush();
+}
+
+void criarPoligono(){
+    verificaClique(coordx, coordy);
+}
+
 void corCelula(int x, int y, float &r,float &g, float &b){
     //cout << "X " << x << "  Y " << y << "  VALOR:" << cor << endl;
     if (x < 60){
-        if(y < 60) // preto
-            r= 0.0,g= 0.0, b= 0.0;
-        else if(y < 120) // azul
-            r= 0.0,g= 0.0, b= 1.0;
-        else if(y < 180) // verde
-            r= 0.0,g= 1.0, b= 0.0;
-        else if(y < 240) // vermelho
-            r= 1.0,g= 0.0, b= 0.0;
-        else if(y < 300) // ciano
-            r= 0.0,g= 1.0, b= 1.0;
-        else if(y < 360) // amarelo
-            r= 1.0,g= 1.0, b= 0.0;
-        else if(y < 420) // magenta
-            r= 1.0,g= 0.0, b= 1.0;
-        else if(y < 480) // verde escuro
-            r= 0.2,g= 0.5, b= 0.4;
-        else if(y < 540) // vermelho escuro
-            r= 0.4,g= 0.0, b= 0.4;
-        else if(y < 600) // azul escuro
-            r= 0.4,g= 0.4, b= 1.0;
+        corPincel = 600 - y;
 
-        corPincel = y;
+    }
+    if (x > 60){
+        y = corPincel;
+        cout << "Cor Pincel: " << corPincel << endl;
+    }
+
+    if(y < 60) {// preto
+        r= 0.0,g= 0.0, b= 0.0;
+        if(x<60)
+            cout << "Cor selecionada Preto" << endl;
+    }else if(y < 120){ // azul
+        r= 0.0,g= 0.0, b= 1.0;
+        if(x<60)
+            cout << "Cor selecionada Azul" << endl;
+    }else if(y < 180){ // verde
+        r= 0.0,g= 1.0, b= 0.0;
+        if(x<60)
+            cout << "Cor selecionada Verde" << endl;
+    }else if(y < 240){ // vermelho
+        r= 1.0,g= 0.0, b= 0.0;
+        if(x<60)
+            cout << "Cor selecionada Vermelho" << endl;
+    }else if(y < 300){ // ciano
+        r= 0.0,g= 1.0, b= 1.0;
+        if(x<60)
+            cout << "Cor selecionada Ciano" << endl;
+    }else if(y < 360){ // amarelo
+        r= 1.0,g= 1.0, b= 0.0;
+        if(x<60)
+            cout << "Cor selecionada Amarelo" << endl;
+    }else if(y < 420){ // magenta
+        r= 1.0,g= 0.0, b= 1.0;
+        if(x<60)
+            cout << "Cor selecionada Magenta" << endl;
+    }else if(y < 480){ // verde escuro
+        r= 0.2,g= 0.5, b= 0.4;
+        if(x<60)
+            cout << "Cor selecionada Verde Oceano" << endl;
+    }else if(y < 540){ // vermelho escuro
+        r= 0.4,g= 0.0, b= 0.4;
+        if(x<60)
+            cout << "Cor selecionada Magenta Escuro" << endl;
+    }else if(y < 600){ // azul escuro
+        r= 0.4,g= 0.4, b= 1.0;
+        if(x<60)
+            cout << "Cor selecionada Roxo" << endl;
     }
 }
 
