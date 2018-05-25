@@ -14,6 +14,7 @@ int COLUNAS = 600.0;
 int LINHAS = 600.0;
 GLint coordx, coordy;
 int displayControle[600][600];
+int corPincel;
 
 /*Menu de Funcoes*/
 void corCelula(int, int, float&, float&, float&);
@@ -26,33 +27,31 @@ void inicializaMenu();
 void menu(int item);
 void init();
 
-
-
-void corCelula(int x, int y, float &rn,float &gn, float &bn){
-    int cor = 1;
+void corCelula(int x, int y, float &r,float &g, float &b){
     //cout << "X " << x << "  Y " << y << "  VALOR:" << cor << endl;
-    switch(cor){
-        case 1: //destroyer
-            rn = 1.0; gn = 0.0; bn = 0.0;
-        break;
-        case 2: //porta avioes
-            rn = 1.0; gn = 1.0; bn = 0.0;
-        break;
-        case 3: //lancaataque
-            rn = 1.0; gn = 0.0; bn = 1.0;
-        break;
-        case 4: //submarino
-            rn = 0.0; gn = 1.0; bn = 1.0;
-        break;
-        case 5: //corveta
-            rn = 0.0; gn = 1.0; bn = 0.0;
-        break;
-        case 6:{ //bomba
-            rn = 0.0; gn = 0.0; bn = 0.0;
-        }break;
-        case 0: // agua
-            rn = 0.0; gn = 0.0; bn = 1.0;
-        break;
+    if (x < 60){
+        if(y < 60) // preto
+            r= 0.0,g= 0.0, b= 0.0;
+        else if(y < 120) // azul
+            r= 0.0,g= 0.0, b= 1.0;
+        else if(y < 180) // verde
+            r= 0.0,g= 1.0, b= 0.0;
+        else if(y < 240) // vermelho
+            r= 1.0,g= 0.0, b= 0.0;
+        else if(y < 300) // ciano
+            r= 0.0,g= 1.0, b= 1.0;
+        else if(y < 360) // amarelo
+            r= 1.0,g= 1.0, b= 0.0;
+        else if(y < 420) // magenta
+            r= 1.0,g= 0.0, b= 1.0;
+        else if(y < 480) // verde escuro
+            r= 0.2,g= 0.5, b= 0.4;
+        else if(y < 540) // vermelho escuro
+            r= 0.4,g= 0.0, b= 0.4;
+        else if(y < 600) // azul escuro
+            r= 0.4,g= 0.4, b= 1.0;
+
+        corPincel = y;
     }
 }
 
@@ -76,26 +75,36 @@ void gerenciaMouse(int button, int state, int x, int y){
   }
 }
 
-void unit(int x, int y,double r, double g, double b){
+void unitCor(int x, int y,double r, double g, double b){
     glColor3f(r,g,b);
     glBegin(GL_POLYGON);
         glVertex2f(x,y);
-        glVertex2f(x+1,y);
-        glVertex2f(x+1,y+1);
-        glVertex2f(x,y+1);
+        glVertex2f(x+60,y);
+        glVertex2f(x+60,y+60);
+        glVertex2f(x,y+60);
     glEnd();
+    glFlush();
+}
+
+void unit(int x, int y,double r, double g, double b){
+    if (x>60){
+        glColor3f(r,g,b);
+        glBegin(GL_POLYGON);
+            glVertex2f(x,y);
+            glVertex2f(x+1,y);
+            glVertex2f(x+1,y+1);
+            glVertex2f(x,y+1);
+        glEnd();
+        glFlush();
+    }
 }
 
 void drawGrid(){
-    for(int x=0; x<10; x++){
-        for(int y=0; y<COLUNAS; y++){
-            double r, g, b;
-            if (x == 0 || y == 0 ){
-                r = 0.5 * x; g = 0.5 * y; b = 0.5;
-            }else{
-                r = 1/x; g = 0.5*(1/y); b = (1/x)*(1/y);
-            }
-            unit(x,y,r,g,b);
+    for(int x=0; x<1; x++){
+        for(int y=0; y<LINHAS; y++){
+            float r, g, b;
+            corCelula(x, y, r, g, b);
+            unitCor(x,y,r,g,b);
         }
     }
 }
@@ -104,26 +113,58 @@ void displayInicial(){
     //Limpa a janela
     glClear(GL_COLOR_BUFFER_BIT);
     drawGrid();
-    glFlush();
     glutMouseFunc(gerenciaMouse);
 }
 
 void inicializaMenu(){
     glutCreateMenu(menu);
     glutAddMenuEntry("Criar Poligono", 1);
-    glutAddMenuEntry("Sair", 2);
+    glutAddMenuEntry("Selecionar Poligono", 2);
+    glutAddMenuEntry("Transladar", 3);
+    glutAddMenuEntry("Rotacionar", 4);
+    glutAddMenuEntry("Calcular Area", 5);
+    glutAddMenuEntry("Determinar orientacao", 6);
+    glutAddMenuEntry("Eliminar", 7);
+    glutAddMenuEntry("Limpar tudo", 8);
+    glutAddMenuEntry("Sair", 9);
     glutAttachMenu(GLUT_RIGHT_BUTTON);
 }
 
 void menu(GLint item){
     switch (item)
         {
-        case 1:{ // Modo Facil - GENIUS
+        case 1:{
             cout << "Criando Poligono!" << endl;
             break;
+        }case 2:{
+            cout << "Selecionando" << endl;
+            break;
         }
-        //Escolhe modo dificil - GENIUS
-        case 2:{
+        case 3:{
+            cout << "Transladando" << endl;
+            break;
+        }
+        case 4:{
+            cout << "Rotacionando" << endl;
+            break;
+        }
+        case 5:{
+            cout << "Calculando Area" << endl;
+            break;
+        }
+        case 6:{
+            cout << "Determinando orientacao" << endl;
+            break;
+        }
+        case 7:{
+            cout << "Eliminar" << endl;
+            break;
+        }
+        case 8:{
+            cout << "Limpando tudo!" << endl;
+            break;
+        }
+        case 9:{
             exit(0);
             break;
         }
