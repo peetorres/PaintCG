@@ -10,10 +10,9 @@ Alunos: Pedro Gabriel Evangelista Torres - Matricula: 14.2.4220
 using namespace std ;
 
 typedef struct{
-    int x[50], y[50];
+    int x[100], y[100];
     int vertices;
 }Poligono;
-
 
 /*Variaveis Globais*/
 int COLUNAS = 600.0;
@@ -22,7 +21,7 @@ int coordx, coordy;
 int displayControle[600][600];
 int corPincel;
 int mod = 0;
-Poligono figura;
+Poligono figura[100];
 int pol = 0; // Variavel de controle de poligonos
 int coordenada;
 float rn, gn, bn;
@@ -52,15 +51,15 @@ void pegaCoordenada(int coordx, int coordy){
 
     if (coordx>60){
         coordenada ++;
-        figura.vertices = coordenada;
-        figura.x[coordenada-1] = coordx;
-        figura.y[coordenada-1] = coordy;
+        figura[pol].vertices = coordenada;
+        figura[pol].x[coordenada-1] = coordx;
+        figura[pol].y[coordenada-1] = coordy;
         cout << "Salvou coordenada " << coordenada << endl;
 
         //cout << "Conferindo x: Atual = " << coordx << " Primeiro = " << figura.x[0] << endl;
         //cout << "Conferindo y: Atual = " << coordy << " Primeiro = " << figura.y[0] << endl;
     }
-    if ((abs(coordx - figura.x[0]) < 5 && abs(coordy - figura.y[0]) < 5 ) && coordenada > 1) {
+    if ((abs(coordx - figura[pol].x[0]) < 5 && abs(coordy - figura[pol].y[0]) < 5 ) && coordenada > 1) {
         criarPoligono();
         cout << "Poligono fechado!" << endl;
         coordenada = 0;
@@ -72,15 +71,16 @@ void pegaCoordenada(int coordx, int coordy){
 }
 
 void criarPoligono(){
-    pol++;
-    cout << "Poligono " << pol << " esta sendo desenhado." << endl;
-
     corCelula(coordx, coordy, rn,gn,bn);
     glBegin(GL_POLYGON);
-        for(int i=0; i<figura.vertices; i++)
-            glVertex2f(figura.x[i],600-figura.y[i]);
+        for(int i=0; i<figura[pol].vertices; i++){
+            glVertex2f(figura[pol].x[i],600-figura[pol].y[i]);
+            //cout << "Desenhando vertice ponto x: " << figura[pol].x[i] << " ponto y: " << 600-figura[pol].y[i] << endl;
+        }
     glEnd();
     glFlush();
+    pol++;
+    cout << "Poligono " << pol << " desenhado." << endl;
 }
 
 void corCelula(int x, int y, float &r,float &g, float &b){
@@ -273,9 +273,11 @@ void init(){ //substitui o init dos slides
     glOrtho (0.0 , COLUNAS , 0.0 , LINHAS , -1.0, 1.0);
     glMatrixMode(GL_MODELVIEW);
 
-    figura.vertices = 0;
-    figura.x[0] = 0;
-    figura.y[0] = 0;
+    for(int i=0; i<10; i++){
+        figura[pol].vertices = 0;
+        figura[pol].x[0] = 0;
+        figura[pol].y[0] = 0;
+    }
 }
 
 int main(int argc, char** argv){
