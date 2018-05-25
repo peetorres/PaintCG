@@ -9,15 +9,27 @@ Alunos: Pedro Gabriel Evangelista Torres - Matricula: 14.2.4220
 
 using namespace std ;
 
+typedef struct{
+    int x[50], y[50];
+    int vertices;
+}Poligono;
+
+
 /*Variaveis Globais*/
 int COLUNAS = 600.0;
 int LINHAS = 600.0;
 int coordx, coordy;
 int displayControle[600][600];
 int corPincel;
+int mod = 0;
+Poligono figura;
+int pol = 0; // Variavel de controle de poligonos
+int coordenada;
+float rn, gn, bn;
 
 /*Menu de Funcoes*/
 void pegaCoordenada(int, int);
+void criarPoligono();
 void corCelula(int, int, float&, float&, float&);
 void verificaClique(int, int);
 void gerenciaMouse(int , int , int , int );
@@ -35,14 +47,40 @@ void pegaCoordenada(int coordx, int coordy){
     int xpos, ypos;
     xpos = coordx;
     ypos = coordy;
-    //cout << "xpos: " << xpos << "ypos: " << ypos << endl;
-    corCelula(xpos,ypos,r,g,b);
-    unit(xpos,600-ypos,r,g,b);
-    glFlush();
+
+    corCelula(coordx, coordy, r, g, b);
+
+    if (coordx>60){
+        coordenada ++;
+        figura.vertices = coordenada;
+        figura.x[coordenada-1] = coordx;
+        figura.y[coordenada-1] = coordy;
+        cout << "Salvou coordenada " << coordenada << endl;
+
+        //cout << "Conferindo x: Atual = " << coordx << " Primeiro = " << figura.x[0] << endl;
+        //cout << "Conferindo y: Atual = " << coordy << " Primeiro = " << figura.y[0] << endl;
+    }
+    if ((abs(coordx - figura.x[0]) < 5 && abs(coordy - figura.y[0]) < 5 ) && coordenada > 1) {
+        criarPoligono();
+        cout << "Poligono fechado!" << endl;
+        coordenada = 0;
+        mod = 0;
+    }
+    else {
+        unit(coordx, 600-coordy,rn,gn,bn);
+    }
 }
 
 void criarPoligono(){
-    verificaClique(coordx, coordy);
+    pol++;
+    cout << "Poligono " << pol << " esta sendo desenhado." << endl;
+
+    corCelula(coordx, coordy, rn,gn,bn);
+    glBegin(GL_POLYGON);
+        for(int i=0; i<figura.vertices; i++)
+            glVertex2f(figura.x[i],600-figura.y[i]);
+    glEnd();
+    glFlush();
 }
 
 void corCelula(int x, int y, float &r,float &g, float &b){
@@ -102,14 +140,12 @@ void corCelula(int x, int y, float &r,float &g, float &b){
 }
 
 void verificaClique(int coordx, int coordy){
-    float r, g, b;
     int xpos, ypos;
     xpos = coordx;
     ypos = coordy;
     //cout << "xpos: " << xpos << "ypos: " << ypos << endl;
-    corCelula(xpos,ypos,r,g,b);
-    unit(xpos,600-ypos,r,g,b);
-    glFlush();
+    corCelula(xpos,ypos,rn,gn,bn);
+    unit(xpos,600-ypos,rn,gn,bn); // Desenhando o pontinho na tela.
 }
 
 void gerenciaMouse(int button, int state, int x, int y){
@@ -117,7 +153,12 @@ void gerenciaMouse(int button, int state, int x, int y){
         coordx = x;
         coordy = y;
         //cout << "valores do mouse " << coordx << " e " << coordy << endl;
-        verificaClique(coordx, coordy);
+        if (mod == 0){
+            corCelula(coordx, coordy, rn, gn, bn);
+        }
+        if (mod == 1){
+            pegaCoordenada(coordx, coordy);
+        }
   }
 }
 
@@ -135,11 +176,9 @@ void unitCor(int x, int y,double r, double g, double b){
 void unit(int x, int y,double r, double g, double b){
     if (x>60){
         glColor3f(r,g,b);
-        glBegin(GL_POLYGON);
+        glPointSize(1);
+        glBegin(GL_POINTS);
             glVertex2f(x,y);
-            glVertex2f(x+1,y);
-            glVertex2f(x+1,y+1);
-            glVertex2f(x,y+1);
         glEnd();
         glFlush();
     }
@@ -148,15 +187,13 @@ void unit(int x, int y,double r, double g, double b){
 void drawGrid(){
     for(int x=0; x<1; x++){
         for(int y=0; y<LINHAS; y++){
-            float r, g, b;
-            corCelula(x, y, r, g, b);
-            unitCor(x,y,r,g,b);
+            corCelula(x, y, rn, gn, bn);
+            unitCor(x,y,rn,gn,bn);
         }
     }
 }
 
 void displayInicial(){
-    //Limpa a janela
     glClear(GL_COLOR_BUFFER_BIT);
     drawGrid();
     glutMouseFunc(gerenciaMouse);
@@ -180,34 +217,43 @@ void menu(GLint item){
     switch (item)
         {
         case 1:{
-            cout << "Criando Poligono!" << endl;
+            cout << "Criando Poligono." << endl;
+            mod = 1;
+            coordenada = 0;
             break;
         }case 2:{
-            cout << "Selecionando" << endl;
+            cout << "Selecionando Poligono." << endl;
+            mod = 2;
             break;
         }
         case 3:{
-            cout << "Transladando" << endl;
+            cout << "Transladando Poligono." << endl;
+            mod = 3;
             break;
         }
         case 4:{
             cout << "Rotacionando" << endl;
+            mod = 4;
             break;
         }
         case 5:{
             cout << "Calculando Area" << endl;
+            mod = 5;
             break;
         }
         case 6:{
             cout << "Determinando orientacao" << endl;
+            mod = 6;
             break;
         }
         case 7:{
             cout << "Eliminar" << endl;
+            mod = 7;
             break;
         }
         case 8:{
             cout << "Limpando tudo!" << endl;
+            mod = 8;
             break;
         }
         case 9:{
@@ -226,6 +272,10 @@ void init(){ //substitui o init dos slides
     glLoadIdentity();
     glOrtho (0.0 , COLUNAS , 0.0 , LINHAS , -1.0, 1.0);
     glMatrixMode(GL_MODELVIEW);
+
+    figura.vertices = 0;
+    figura.x[0] = 0;
+    figura.y[0] = 0;
 }
 
 int main(int argc, char** argv){
