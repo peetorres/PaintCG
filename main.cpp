@@ -277,7 +277,7 @@ void pegaCoordenada(int coordx, int coordy){ // Coord dos pontos do poligono
         mod = 0;
     }
     else {
-        unit(coordx, coordy,rn,gn,bn);
+        unit(coordx, coordy,r,g,b);
     }
 }
 
