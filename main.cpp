@@ -91,7 +91,7 @@ void alteraTamanhoJanela(GLsizei w, GLsizei h){
 
    if(w == 0) w = 1;
 
-   // Especifica as dimens›es da Viewport
+   // Especifica as dimensâ€ºes da Viewport
    glViewport(0, 0, w, h);
 
    // Inicializa o sistema de coordenadas
@@ -101,7 +101,7 @@ void alteraTamanhoJanela(GLsizei w, GLsizei h){
    //cout << "w: " << w << endl;
    //cout << "h: " << h << endl;
 
-   // Estabelece a janela de sele‹o (left, right, bottom, top)
+   // Estabelece a janela de seleÂâ€¹o (left, right, bottom, top)
    if (w <= h){
            gluOrtho2D (0.0f, 600.0f, 0.0f, 600.0f*MULT);
            MULT = h/w;
@@ -115,13 +115,6 @@ void alteraTamanhoJanela(GLsizei w, GLsizei h){
 }
 
 int determinarOrientacao(){
-    /*
-    https://pt.wikihow.com/Calcular-a-çrea-de-um-Pol%C3%ADgono
-    Se voc listar os pontos no sentido hor‡rio ao invŽs de anti-hor‡rio,
-    voc ter‡ a ‡rea em nœmero negativo. Ent‹o isso pode ser usado como
-    ferramenta para identificar um trajeto c’clico ou sequencial de um
-    dado conjunto de pontos formando um pol’gono.
-    */
     float detPos = 0, detNeg = 0;
     float resultado;
     int qvertices = figura[selecaoPoligono].vertices;
@@ -139,7 +132,6 @@ int determinarOrientacao(){
 }
 
 float calculaArea(){
-    //http://www.dinamatica.com.br/2011/04/area-de-poligonos-atraves-de.html
     float detPos = 0, detNeg = 0;
     float resultado;
     int qvertices = figura[selecaoPoligono].vertices-1;
@@ -265,21 +257,17 @@ void pegaCoordenada(int coordx, int coordy){ // Coord dos pontos do poligono
         //cout << "Conferindo y: Atual = " << coordy << " Primeiro = " << figura[pol].y[coordenada-1] << endl;
     }
     if ((abs(coordx - figura[pol].x[0]) < 5 && abs(coordy - figura[pol].y[0]) < 5 ) && coordenada > 1) {
-        figura[pol].vertices --;
+        //figura[pol].vertices --;
         figura[pol].rp = r;
         figura[pol].gp = g;
         figura[pol].bp = b;
 
-        //glColor3f(r,g,b);
-        //criarPoligono();
-        //cout << "Poligono fechado!" << endl;
-
-
         if(verificaConvexo() == true){
+            figura[pol].vertices --;
             cout << "Poligono Convexo, desenhando!" << endl;
-            criarPoligono();
-            drawQuadro();
+            //criarPoligono();
             pol ++;
+            drawQuadro();
         }
         else{
             cout << "Poligono Nao convexo, apagando." << endl;
