@@ -105,11 +105,11 @@ void alteraTamanhoJanela(GLsizei w, GLsizei h){
    if (w <= h){
            gluOrtho2D (0.0f, 600.0f, 0.0f, 600.0f*MULT);
            MULT = h/w;
-           cout << "if 1 h/w " <<1.0*h/w << endl;
+           //cout << "if 1 h/w " <<1.0*h/w << endl;
    }else if ( h <= w){
            gluOrtho2D (0.0f, 600.0f*MULT, 0.0f, 600.0f);
            MULT = w/h;
-           cout << "if 2 w/h " << 1.0*w/h << endl;
+           //cout << "if 2 w/h " << 1.0*w/h << endl;
    }
     drawQuadro();
 }
@@ -207,8 +207,41 @@ bool pontonoPoligono(int x, int y, int poli){
 }
 
 bool verificaConvexo(){
-    //for(int i=0; i<j)
+    cout << "Entrou no verifica convexo!" << endl;
+    bool sinal, sinalAux;
+    int produtoVetorial = 0;
+    int pvertices = figura[pol].vertices;
+    cout << "For vai de 0 a " << pvertices << endl;
+    for(int i=0; i<pvertices-1;i++){
+        //calculando produto vetorial
+        int a = i-1, b = i, c = i+1;
+        if (a == -1)
+            a = pvertices-1;
+        if (c == pvertices)
+            i = 0;
 
+        cout << "Verificando produto vetorial: (xb e xa): "<< b << "  " << a << endl;
+        cout << "Verificando produto vetorial: (yc e yb): "<< c << "  " << b << endl;
+        cout << "Verificando produto vetorial: (yb e ya): "<< b << "  " << a << endl;
+        cout << "Verificando produto vetorial: (xc e xb): "<< c << "  " << b << endl;
+
+        produtoVetorial = ((figura[pol].x[b]-figura[pol].x[a])*(figura[pol].y[c]-figura[pol].y[b]))
+        - ((figura[pol].y[b]-figura[pol].y[a]) * (figura[pol].x[c]-figura[pol].x[b]));
+
+
+        if (produtoVetorial >= 0){
+            if (sinal == false && i>1){
+                return false;
+            }
+            sinal = true; // positivo
+        }
+        else{
+            if (sinal == true && i>1){
+                return false;
+            }
+            sinal = false; // negativo
+        }
+    }
     return true;
 }
 
@@ -240,8 +273,18 @@ void pegaCoordenada(int coordx, int coordy){ // Coord dos pontos do poligono
         //glColor3f(r,g,b);
         //criarPoligono();
         //cout << "Poligono fechado!" << endl;
-        pol ++;
-        drawQuadro();
+
+
+        if(verificaConvexo() == true){
+            cout << "Poligono Convexo, desenhando!" << endl;
+            criarPoligono();
+            drawQuadro();
+            pol ++;
+        }
+        else{
+            cout << "Poligono Nao convexo, apagando." << endl;
+            drawQuadro();
+        }
         coordenada = 0;
         mod = 0;
     }
