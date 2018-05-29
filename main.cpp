@@ -12,12 +12,20 @@ using namespace std ;
 typedef struct{
     int x[100], y[100];
     int vertices;
+    float rp, gp, bp;
+    int rotacoes;
+    float rotacao[10];
+    int translacoes;
+    float translacao[10];
+    float area;
+    float orientacao;
 }Poligono;
 
 /*Variaveis Globais*/
 int COLUNAS = 600.0;
 int LINHAS = 600.0;
 int coordx, coordy;
+int tx, ty;
 int displayControle[600][600];
 int corPincel;
 int mod = 0;
@@ -41,6 +49,72 @@ void inicializaMenu();
 void menu(int item);
 void init();
 void limpaQuadro();
+void translate();
+float calculaArea();
+int determinarOrientacao();
+
+int determinarOrientacao(){
+    /*
+    https://pt.wikihow.com/Calcular-a-Área-de-um-Pol%C3%ADgono
+    Se você listar os pontos no sentido horário ao invés de anti-horário,
+    você terá a área em número negativo. Então isso pode ser usado como
+    ferramenta para identificar um trajeto cíclico ou sequencial de um
+    dado conjunto de pontos formando um polígono.
+    */
+    float detPos = 0, detNeg = 0;
+    float resultado;
+    int qvertices = figura[selecaoPoligono].vertices-1;
+    for(int i=0; i<qvertices; i++){
+        detPos += figura[selecaoPoligono].x[i] * figura[selecaoPoligono].y[i+1];
+        detNeg += figura[selecaoPoligono].x[qvertices-i] * figura[selecaoPoligono].y[qvertices-i-1];
+    }
+    resultado = (detPos - detNeg)/2.0;
+    if (resultado < 0)
+        return 0; // horario
+    else
+        return 1; // anti horario
+}
+
+float calculaArea(){
+    //http://www.dinamatica.com.br/2011/04/area-de-poligonos-atraves-de.html
+    float detPos = 0, detNeg = 0;
+    float resultado;
+    int qvertices = figura[selecaoPoligono].vertices-1;
+    for(int i=0; i<qvertices; i++){
+        detPos += figura[selecaoPoligono].x[i] * figura[selecaoPoligono].y[i+1];
+        detNeg += figura[selecaoPoligono].x[qvertices-i] * figura[selecaoPoligono].y[qvertices-i-1];
+    }
+    resultado = (detPos - detNeg)/2.0;
+    if (resultado < 0)
+        resultado = resultado * -1;
+    return resultado;
+}
+
+void drawQuadro(){
+    cout << "Entrou no draw Quadro!" << endl;
+    limpaQuadro();
+    int auxmod = mod;
+    int aux = pol;
+    mod = 10;
+    for (int i=0; i<aux; i++){
+        if (mod==3){
+            tx = figura[selecaoPoligono].x[0] - coordx;
+            ty = figura[selecaoPoligono].y[0] - coordy;
+            //glTranslatef(15, 15,0);
+            glPushMatrix();
+        }
+        pol = i;
+        cout << "Vai chamar a cria poligono com pol: " << pol << endl;
+        criarPoligono();
+    }
+    pol = aux;
+}
+
+void translate(){
+    tx = 1;
+    drawQuadro();
+    mod = 0;
+}
 
 void limparTudo(){
     for(int i=0; i<pol; i++){
@@ -74,6 +148,7 @@ bool verificaConvexo(){
 
     return true;
 }
+
 void pegaCoordenada(int coordx, int coordy){ // Coord dos pontos do poligono
     float r, g, b;
     int xpos, ypos;
@@ -88,13 +163,20 @@ void pegaCoordenada(int coordx, int coordy){ // Coord dos pontos do poligono
         figura[pol].x[coordenada-1] = coordx;
         figura[pol].y[coordenada-1] = coordy;
         //cout << "Salvou coordenada " << coordenada << endl;
-        //cout << "Conferindo x: Atual = " << coordx << " Primeiro = " << figura.x[0] << endl;
-        //cout << "Conferindo y: Atual = " << coordy << " Primeiro = " << figura.y[0] << endl;
+        cout << "Conferindo x: Atual = " << coordx << " Primeiro = " << figura[pol].x[coordenada-1] << endl;
+        cout << "Conferindo y: Atual = " << coordy << " Primeiro = " << figura[pol].y[coordenada-1] << endl;
     }
     if ((abs(coordx - figura[pol].x[0]) < 5 && abs(coordy - figura[pol].y[0]) < 5 ) && coordenada > 1) {
         figura[pol].vertices --;
-        criarPoligono();
-        cout << "Poligono fechado!" << endl;
+        figura[pol].rp = r;
+        figura[pol].gp = g;
+        figura[pol].bp = b;
+
+        //glColor3f(r,g,b);
+        //criarPoligono();
+        //cout << "Poligono fechado!" << endl;
+        pol ++;
+        drawQuadro();
         coordenada = 0;
         mod = 0;
     }
@@ -104,7 +186,11 @@ void pegaCoordenada(int coordx, int coordy){ // Coord dos pontos do poligono
 }
 
 void criarPoligono(){ // Cria poligono
-    corCelula(coordx, coordy, rn,gn,bn);
+    glColor3f(figura[pol].rp,figura[pol].gp,figura[pol].bp);
+    if(mod == 3){
+        //glTranslatef(15,15,0.0);
+        //glColor3f(1.0,1.0,1.0);
+    }
     glBegin(GL_POLYGON);
         for(int i=0; i<figura[pol].vertices; i++){
             glVertex2f(figura[pol].x[i],600-figura[pol].y[i]);
@@ -113,8 +199,13 @@ void criarPoligono(){ // Cria poligono
         }
     glEnd();
     glFlush();
-    pol++;
-    cout << "Poligono " << pol << " desenhado." << endl;
+    if(mod == 3){
+        //glTranslatef(-15,-15,0.0);
+    }
+    if(mod != 10){
+        pol++;
+    }
+    cout << "Poligono " << pol+1 << " desenhado." << endl;
 }
 
 void corCelula(int x, int y, float &r,float &g, float &b){ // Pega cor da Palheta (Cor atual)
@@ -184,10 +275,13 @@ void verificaClique(int coordx, int coordy){
         for(int i = pol - 1; i>=0; i--){
             if(pontonoPoligono(coordx, coordy, i)){
                 cout << "Poligono Selecionado: " << i + 1 << endl;
-                selecaoPoligono = i+1;
+                selecaoPoligono = i;
                 break;
             }
         }
+    }
+    if (mod == 3){
+        translate();
     }
 }
 
@@ -204,6 +298,10 @@ void gerenciaMouse(int button, int state, int x, int y){
         }
         if (mod == 2){
             verificaClique(coordx, coordy);
+        }
+        if(mod == 3){
+            verificaClique(coordx,coordy);
+            mod = 0;
         }
   }
 }
@@ -286,6 +384,7 @@ void menu(GLint item){
         case 3:{
             cout << "Transladando Poligono." << endl;
             mod = 3;
+            translate();
             break;
         }
         case 4:{
@@ -296,11 +395,18 @@ void menu(GLint item){
         case 5:{
             cout << "Calculando Area" << endl;
             mod = 5;
+            cout << "Area do poligono " << selecaoPoligono+1 << " = " << calculaArea() << endl;
             break;
         }
         case 6:{
             cout << "Determinando orientacao" << endl;
             mod = 6;
+            if (determinarOrientacao() == 0){
+                cout << "Sentido do poligono: Horario" << endl;
+            }
+            if (determinarOrientacao() == 1){
+                cout << "Sentido do poligono: Anti-Horario" << endl;
+            }
             break;
         }
         case 7:{
