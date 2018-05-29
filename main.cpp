@@ -220,10 +220,10 @@ bool verificaConvexo(){
         if (c == pvertices)
             i = 0;
 
-        cout << "Verificando produto vetorial: (xb e xa): "<< b << "  " << a << endl;
-        cout << "Verificando produto vetorial: (yc e yb): "<< c << "  " << b << endl;
-        cout << "Verificando produto vetorial: (yb e ya): "<< b << "  " << a << endl;
-        cout << "Verificando produto vetorial: (xc e xb): "<< c << "  " << b << endl;
+        //cout << "Verificando produto vetorial: (xb e xa): "<< b << "  " << a << endl;
+        //cout << "Verificando produto vetorial: (yc e yb): "<< c << "  " << b << endl;
+        //cout << "Verificando produto vetorial: (yb e ya): "<< b << "  " << a << endl;
+        //cout << "Verificando produto vetorial: (xc e xb): "<< c << "  " << b << endl;
 
         produtoVetorial = ((figura[pol].x[b]-figura[pol].x[a])*(figura[pol].y[c]-figura[pol].y[b]))
         - ((figura[pol].y[b]-figura[pol].y[a]) * (figura[pol].x[c]-figura[pol].x[b]));
