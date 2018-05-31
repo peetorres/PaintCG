@@ -14,8 +14,7 @@ typedef struct{
     int vertices;
     float rp, gp, bp;
     bool preench;
-    int rotacoes;
-    float rotacao[10];
+    int rotacoes = 0;
     int translacoes;
     float translacao[10];
     float area;
@@ -30,6 +29,7 @@ float MULT=1.0;
 int displayControle[600][600];
 int corPincel;
 int tx, ty;
+int rot;
 int mod = 0;
 Poligono figura[100];
 int pol = 0; // Variavel de controle de poligonos
@@ -178,6 +178,17 @@ void translate(){
     //mod = 0;
 }
 
+void rotacionar(){
+    cout << "Entrou no translate!" << endl;
+    if(selecaoPoligono != -1){
+        if (rot == 0)
+            figura[selecaoPoligono].rotacoes -= 90;
+        if (rot == 1)
+            figura[selecaoPoligono].rotacoes += 90;
+        drawQuadro();
+    }
+}
+
 void limparTudo(){
     for(int i=0; i<pol; i++){
         figura[i].vertices = 0;
@@ -290,9 +301,8 @@ void pegaCoordenada(int coordx, int coordy){ // Coord dos pontos do poligono
 
 void criarPoligono(){ // Cria poligono
     glColor3f(figura[pol].rp,figura[pol].gp,figura[pol].bp);
-    if(mod == 3){
-        //glTranslatef(15,15,0.0);
-        //glColor3f(1.0,1.0,1.0);
+    if (figura[pol].rotacoes!=0){
+        glRotatef(figura[pol].rotacoes, 0, 0, 1);
     }
     if(figura[pol].preench == true){
         glBegin(GL_POLYGON);
@@ -389,6 +399,13 @@ void verificaClique(int coordx, int coordy){
             }
         }
     }
+    if (mod == 3){
+        tx = coordx - figura[selecaoPoligono].x[0];
+        //cout << "TX: " << tx << endl;
+        ty = coordy - figura[selecaoPoligono].y[0];
+        //cout << "TY: " << ty << endl;
+        translate();
+    }
 }
 
 void gerenciaMouse(int button, int state, int x, int y){
@@ -405,22 +422,18 @@ void gerenciaMouse(int button, int state, int x, int y){
         if (mod == 2){
             verificaClique(coordx, coordy);
         }
-        if(mod == 3){
+
+  }
+  else if (button==GLUT_LEFT_BUTTON && state == GLUT_UP){
+    if(mod == 3){
             cout << "ENTROU AQUI CACETE!" << endl;
             verificaClique(coordx,coordy);
-            tx = figura[selecaoPoligono].x[0] - coordx;
-            cout << "TX: " << tx << endl;
-            ty = figura[selecaoPoligono].y[0] - coordy;
-            cout << "TY: " << ty << endl;
-            translate();
             //mod = 0;
         }
   }
 }
 
 void unitCor(float x, float y,double r, double g, double b){
-    //x = x*MULT;
-    //y = y*MULT;
     glColor3f(r,g,b);
     glBegin(GL_POLYGON);
         glVertex2f(x,y);
@@ -480,7 +493,7 @@ void inicializaMenu(){
     glutAddMenuEntry("Criar Poligono", 1);
     glutAddMenuEntry("Selecionar Poligono", 2);
     glutAddMenuEntry("Transladar", 3);
-    glutAddMenuEntry("Rotacionar", subMenu);
+    glutAddMenuEntry("Rotacionar", 10);
     glutAddMenuEntry("Calcular Area", 5);
     glutAddMenuEntry("Determinar orientacao", 6);
     glutAddMenuEntry("Eliminar", 7);
@@ -513,11 +526,15 @@ void menu(GLint item){
         case 10:{
             cout << "Rotacionando +90º" << endl;
             mod = 4;
+            rot = 1;
+            rotacionar();
             break;
         }
         case 11:{
             cout << "Rotacionando -90º" << endl;
             mod = 4;
+            rot = 0;
+            rotacionar();
             break;
         }
         case 5:{
@@ -568,6 +585,7 @@ void init(){
         figura[i].vertices = 0;
         figura[i].x[i] = 0;
         figura[i].y[i] = 0;
+        figura[i].rotacoes = 0;
     }
 }
 
