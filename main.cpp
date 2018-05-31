@@ -35,7 +35,7 @@ Poligono figura[100];
 int pol = 0; // Variavel de controle de poligonos
 int coordenada;
 float rn, gn, bn;
-int selecaoPoligono = 0;
+int selecaoPoligono = -1;
 bool teclaPreench = false;
 
 /*Menu de Funcoes*/
@@ -150,14 +150,15 @@ void drawQuadro(){
     limpaQuadro();
     int auxmod = mod;
     int aux = pol;
-    mod = 10;
+    //mod = 10;
     for (int i=0; i<aux; i++){
+            /*
         if (mod==3){
             tx = figura[selecaoPoligono].x[0] - coordx;
             ty = figura[selecaoPoligono].y[0] - coordy;
             //glTranslatef(15, 15,0);
             glPushMatrix();
-        }
+        }*/
         pol = i;
         cout << "Vai chamar a cria poligono com pol: " << pol << endl;
         criarPoligono();
@@ -166,9 +167,15 @@ void drawQuadro(){
 }
 
 void translate(){
-    tx = 1;
-    drawQuadro();
-    mod = 0;
+    cout << "Entrou no translate!" << endl;
+    if(selecaoPoligono != -1){
+        for(int i =0; i<figura[selecaoPoligono].vertices; i++){
+            figura[selecaoPoligono].x[i] += tx;
+            figura[selecaoPoligono].y[i] += ty;
+        }
+        drawQuadro();
+    }
+    //mod = 0;
 }
 
 void limparTudo(){
@@ -382,9 +389,6 @@ void verificaClique(int coordx, int coordy){
             }
         }
     }
-    if (mod == 3){
-        translate();
-    }
 }
 
 void gerenciaMouse(int button, int state, int x, int y){
@@ -402,8 +406,14 @@ void gerenciaMouse(int button, int state, int x, int y){
             verificaClique(coordx, coordy);
         }
         if(mod == 3){
+            cout << "ENTROU AQUI CACETE!" << endl;
             verificaClique(coordx,coordy);
-            mod = 0;
+            tx = figura[selecaoPoligono].x[0] - coordx;
+            cout << "TX: " << tx << endl;
+            ty = figura[selecaoPoligono].y[0] - coordy;
+            cout << "TY: " << ty << endl;
+            translate();
+            //mod = 0;
         }
   }
 }
@@ -461,11 +471,16 @@ void displayInicial(){
 }
 
 void inicializaMenu(){
+    GLint subMenu = glutCreateMenu(menu);
+    glutAddMenuEntry("+90o", 10);
+    glutAddMenuEntry("-90o", 11);
+
+
     glutCreateMenu(menu);
     glutAddMenuEntry("Criar Poligono", 1);
     glutAddMenuEntry("Selecionar Poligono", 2);
     glutAddMenuEntry("Transladar", 3);
-    glutAddMenuEntry("Rotacionar", 4);
+    glutAddMenuEntry("Rotacionar", subMenu);
     glutAddMenuEntry("Calcular Area", 5);
     glutAddMenuEntry("Determinar orientacao", 6);
     glutAddMenuEntry("Eliminar", 7);
@@ -490,11 +505,18 @@ void menu(GLint item){
         case 3:{
             cout << "Transladando Poligono." << endl;
             mod = 3;
+            tx = 0;
+            ty = 0;
             translate();
             break;
         }
-        case 4:{
-            cout << "Rotacionando" << endl;
+        case 10:{
+            cout << "Rotacionando +90º" << endl;
+            mod = 4;
+            break;
+        }
+        case 11:{
+            cout << "Rotacionando -90º" << endl;
             mod = 4;
             break;
         }
