@@ -150,15 +150,7 @@ void drawQuadro(){
     limpaQuadro();
     int auxmod = mod;
     int aux = pol;
-    //mod = 10;
     for (int i=0; i<aux; i++){
-            /*
-        if (mod==3){
-            tx = figura[selecaoPoligono].x[0] - coordx;
-            ty = figura[selecaoPoligono].y[0] - coordy;
-            //glTranslatef(15, 15,0);
-            glPushMatrix();
-        }*/
         pol = i;
         cout << "Vai chamar a cria poligono com pol: " << pol << endl;
         criarPoligono();
@@ -168,10 +160,16 @@ void drawQuadro(){
 
 void translate(){
     cout << "Entrou no translate!" << endl;
+
     if(selecaoPoligono != -1){
         for(int i =0; i<figura[selecaoPoligono].vertices; i++){
-            figura[selecaoPoligono].x[i] += tx;
-            figura[selecaoPoligono].y[i] += ty;
+            //cout << "Figura x : " << figura[selecaoPoligono].x[i] << "  tx: " << tx << endl;
+            //cout << "Figura y : " << figura[selecaoPoligono].y[i] << "  ty: " << ty << endl;
+            figura[selecaoPoligono].x[i] = figura[selecaoPoligono].x[i] + tx;
+            figura[selecaoPoligono].y[i] = figura[selecaoPoligono].y[i] + ty;
+
+            //cout << "Figura x FINAL: " << figura[selecaoPoligono].x[i] << endl;
+            //cout << "Figura y FINAL: " << figura[selecaoPoligono].y[i] << endl;
         }
         drawQuadro();
     }
@@ -403,6 +401,7 @@ void verificaClique(int coordx, int coordy){
         tx = coordx - figura[selecaoPoligono].x[0];
         //cout << "TX: " << tx << endl;
         ty = coordy - figura[selecaoPoligono].y[0];
+        //ty = figura[selecaoPoligono].y[0] - coordy;
         //cout << "TY: " << ty << endl;
         translate();
     }
@@ -426,8 +425,8 @@ void gerenciaMouse(int button, int state, int x, int y){
   }
   else if (button==GLUT_LEFT_BUTTON && state == GLUT_UP){
     if(mod == 3){
-            cout << "ENTROU AQUI CACETE!" << endl;
-            verificaClique(coordx,coordy);
+            //verificaClique(coordx,coordy);
+            glutMotionFunc(verificaClique);
             //mod = 0;
         }
   }
@@ -488,12 +487,11 @@ void inicializaMenu(){
     glutAddMenuEntry("+90o", 10);
     glutAddMenuEntry("-90o", 11);
 
-
     glutCreateMenu(menu);
     glutAddMenuEntry("Criar Poligono", 1);
     glutAddMenuEntry("Selecionar Poligono", 2);
     glutAddMenuEntry("Transladar", 3);
-    glutAddMenuEntry("Rotacionar", 10);
+    glutAddMenuEntry("Rotacionar", subMenu);
     glutAddMenuEntry("Calcular Area", 5);
     glutAddMenuEntry("Determinar orientacao", 6);
     glutAddMenuEntry("Eliminar", 7);
