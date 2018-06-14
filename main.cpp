@@ -9,6 +9,7 @@ Alunos: Pedro Gabriel Evangelista Torres - Matricula: 14.2.4220
 using namespace std ;
 
 typedef struct{
+    int criado = 0;
     int x[100], y[100];
     int vertices;
     float rp, gp, bp;
@@ -91,7 +92,7 @@ void alteraTamanhoJanela(GLsizei w, GLsizei h){
 
    if(w == 0) w = 1;
 
-   // Especifica as dimensâ€ºes da Viewport
+   // Especifica as dimens›es da Viewport
    glViewport(0, 0, w, h);
 
    // Inicializa o sistema de coordenadas
@@ -147,6 +148,7 @@ float calculaArea(){
 
 void drawQuadro(){
     cout << "Entrou no draw Quadro!" << endl;
+
     limpaQuadro();
     int auxmod = mod;
     int aux = pol;
@@ -156,6 +158,15 @@ void drawQuadro(){
         criarPoligono();
     }
     pol = aux;
+
+    //Parte para desenhar pontos clicados.
+    if (figura[pol].criado == 0){
+        for(int i=0; i<figura[pol].vertices; i++){
+            //cout << "ENTROU AQUI?" << endl;
+            unit(figura[pol].x[i], figura[pol].y[i], figura[pol].rp, figura[pol].gp, figura[pol].bp);
+        }
+    }
+
 }
 
 void rotacao(){
@@ -168,7 +179,7 @@ void rotacao(){
         sen = 1;
         cos = 0;
     }
-    //Ponto *pivo = new Ponto(p[0].x, p[0].y);//desloca o pivo de x para a posiÃ§Ã£o 0
+    //Ponto *pivo = new Ponto(p[0].x, p[0].y);//desloca o pivo de x para a posição 0
     //translacao(-pivo.x, -pivo.y);//usando pivo negativo
     for (int i=0; i < figura[selecaoPoligono].vertices; i++)
     {
@@ -178,7 +189,7 @@ void rotacao(){
         figura[selecaoPoligono].y[i]=yAux;
     }
     drawQuadro;
-    //translaÃ§Ã£o(pivo.x, pivo.y);//move de volta os pontos para a origem
+    //translação(pivo.x, pivo.y);//move de volta os pontos para a origem
 }
 
 void translate(){
@@ -291,7 +302,8 @@ void pegaCoordenada(int coordx, int coordy){ // Coord dos pontos do poligono
         figura[pol].vertices = coordenada;
         figura[pol].x[coordenada-1] = coordx;
         figura[pol].y[coordenada-1] = coordy;
-        //cout << "Salvou coordenada " << coordenada << endl;
+        unit(coordx, coordy, r, g, b);
+        cout << "Salvou coordenada " << coordenada << endl;
         //cout << "Conferindo x: Atual = " << coordx << " Primeiro = " << figura[pol].x[coordenada-1] << endl;
         //cout << "Conferindo y: Atual = " << coordy << " Primeiro = " << figura[pol].y[coordenada-1] << endl;
     }
@@ -311,6 +323,7 @@ void pegaCoordenada(int coordx, int coordy){ // Coord dos pontos do poligono
         }
         else{
             cout << "Poligono Nao convexo, apagando." << endl;
+            figura[pol].vertices = 0;
             drawQuadro();
         }
         coordenada = 0;
@@ -424,17 +437,18 @@ void verificaClique(int coordx, int coordy){
         }
     }
     if (mod == 3){
+        cout << "valores do mouse elseif no motionefunc" << coordx << " e " << 600-coordy << endl;
         tx = coordx - figura[selecaoPoligono].x[0];
-        cout << "TX: " << tx << endl;
-        ty = -(coordy - figura[selecaoPoligono].y[0]);
+        //cout << "TX: " << tx << " coordx: " << coordx << " x0: " << figura[selecaoPoligono].x[0] <<endl;
+        ty = LINHAS - coordy - figura[selecaoPoligono].y[0];
         //ty = figura[selecaoPoligono].y[0] - coordy;
-        cout << "TY: " << ty << endl;
+        cout << "TY: " << tx << " coordy: " << coordy << " y0: " << figura[selecaoPoligono].y[0] <<endl;
         translate();
     }
 }
 
 void gerenciaMouse(int button, int state, int x, int y){
-    if(button==GLUT_LEFT_BUTTON && state == GLUT_DOWN){
+    if(button==GLUT_LEFT_BUTTON && state == GLUT_DOWN && mod != 3){
         coordx = (x);
         if(mod != 3){
             coordy = (LINHAS-y);
@@ -452,12 +466,12 @@ void gerenciaMouse(int button, int state, int x, int y){
         }
   }
   if(button == GLUT_RIGHT_BUTTON && state == GLUT_DOWN && mod==1){
-        cout << "Entrou no clique Direito!! " << endl;
+        //cout << "Entrou no clique Direito!! " << endl;
         cliquedireito = 1;
         pegaCoordenada(coordx,coordy);
         cliquedireito = 0;
   }
-  else if (button==GLUT_LEFT_BUTTON && state == GLUT_UP){
+  else if (button==GLUT_LEFT_BUTTON && state == GLUT_DOWN){
     if(mod == 3){
             //verificaClique(coordx,coordy);
             glutMotionFunc(verificaClique);
@@ -474,7 +488,6 @@ void unitCor(float x, float y,double r, double g, double b){
         glVertex2f(x+60,y+60);
         glVertex2f(x,y+60);
     glEnd();
-    glFlush();
 }
 
 void limpaQuadro(){
@@ -495,8 +508,8 @@ void unit(int x, int y,double r, double g, double b){
         glBegin(GL_POINTS);
             glVertex2f(x,y);
         glEnd();
-        glFlush();
     }
+    glFlush();
 }
 
 void drawGrid(){
@@ -517,7 +530,6 @@ void displayInicial(){
 }
 
 void inicializaMenu(){
-    //cout << "Mod : " << mod << endl;
     GLint subMenu = glutCreateMenu(menu);
     glutAddMenuEntry("+90o", 10);
     glutAddMenuEntry("-90o", 11);
@@ -555,18 +567,18 @@ void menu(GLint item){
             mod = 3;
             tx = 0;
             ty = 0;
-            translate();
+            //translate();
             break;
         }
         case 10:{
-            cout << "Rotacionando +90Âº" << endl;
+            cout << "Rotacionando +90º" << endl;
             mod = 4;
             rot = 1;
             rotacionar();
             break;
         }
         case 11:{
-            cout << "Rotacionando -90Âº" << endl;
+            cout << "Rotacionando -90º" << endl;
             mod = 4;
             rot = 0;
             rotacionar();
@@ -630,8 +642,6 @@ int main(int argc, char** argv){
     glutInitWindowSize(600,600);
     glutInitWindowPosition(0,0);
     glutCreateWindow("TP II de CG");
-
-
 
     inicializaMenu();
     glutDisplayFunc(displayInicial);
