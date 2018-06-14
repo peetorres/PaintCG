@@ -203,7 +203,7 @@ void translate(){
             figura[selecaoPoligono].y[i] = figura[selecaoPoligono].y[i] + ty;
 
             //cout << "Figura x FINAL: " << figura[selecaoPoligono].x[i] << endl;
-            cout << "Figura y FINAL: " << figura[selecaoPoligono].y[i] << endl;
+            //cout << "Figura y FINAL: " << figura[selecaoPoligono].y[i] << endl;
         }
         drawQuadro();
     }
@@ -437,12 +437,13 @@ void verificaClique(int coordx, int coordy){
         }
     }
     if (mod == 3){
-        cout << "valores do mouse elseif no motionefunc" << coordx << " e " << 600-coordy << endl;
+        cout << "valores do mouse elseif no motionfunc" << coordx << " e " << 600-coordy << endl;
         tx = coordx - figura[selecaoPoligono].x[0];
         //cout << "TX: " << tx << " coordx: " << coordx << " x0: " << figura[selecaoPoligono].x[0] <<endl;
         ty = LINHAS - coordy - figura[selecaoPoligono].y[0];
         //ty = figura[selecaoPoligono].y[0] - coordy;
-        cout << "TY: " << tx << " coordy: " << coordy << " y0: " << figura[selecaoPoligono].y[0] <<endl;
+        //cout << "TY: " << tx << " coordy: " << coordy << " y0: " << figura[selecaoPoligono].y[0] <<endl;
+        cout << "valor do eixo 0 : x = " << figura[selecaoPoligono].x[0] << " y = " << figura[selecaoPoligono].x[0] << endl;
         translate();
     }
 }
