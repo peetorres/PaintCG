@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 /*
 Alunos: Pedro Gabriel Evangelista Torres - Matricula: 14.2.4220
 */
