@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
 Alunos: Pedro Gabriel Evangelista Torres - Matricula: 14.2.4220
 */
@@ -14,11 +15,6 @@ typedef struct{
     int vertices;
     float rp, gp, bp;
     bool preench;
-    int rotacoes = 0;
-    int translacoes;
-    float translacao[10];
-    float area;
-    float orientacao;
 }Poligono;
 
 /*Variaveis Globais*/
@@ -121,13 +117,13 @@ int determinarOrientacao(){
     float detPos = 0, detNeg = 0;
     float resultado;
     int qvertices = figura[selecaoPoligono].vertices;
-    cout << "Quantidade de vertices do poligono: " << qvertices << endl;
+    //cout << "Quantidade de vertices do poligono: " << qvertices << endl;
     for(int i=0; i<qvertices; i++){
         detPos += figura[selecaoPoligono].x[i] * figura[selecaoPoligono].y[i+1];
         detNeg += figura[selecaoPoligono].x[qvertices-i] * figura[selecaoPoligono].y[qvertices-i-1];
     }
     resultado = (detPos - detNeg)/2.0;
-    cout << "Valor do resultado: " << resultado << endl;
+    //cout << "Valor do resultado: " << resultado << endl;
     if (resultado < 0)
         return 0; // horario
     else
@@ -149,14 +145,14 @@ float calculaArea(){
 }
 
 void drawQuadro(){
-    cout << "Entrou no draw Quadro!" << endl;
+    //cout << "Entrou no draw Quadro!" << endl;
 
     limpaQuadro();
     int auxmod = mod;
     int aux = pol;
     for (int i=0; i<aux; i++){
         pol = i;
-        cout << "Vai chamar a cria poligono com pol: " << pol << endl;
+        //cout << "Vai chamar a cria poligono com pol: " << pol << endl;
         criarPoligono();
     }
     pol = aux;
@@ -164,11 +160,11 @@ void drawQuadro(){
     //Parte para desenhar pontos clicados.
     if (figura[pol].criado == 0){
         for(int i=0; i<figura[pol].vertices; i++){
-            //cout << "ENTROU AQUI?" << endl;
             unit(figura[pol].x[i], figura[pol].y[i], figura[pol].rp, figura[pol].gp, figura[pol].bp);
         }
     }
 
+    drawGrid();
 }
 
 void rotacao(){
@@ -181,8 +177,6 @@ void rotacao(){
         sen = 1;
         cos = 0;
     }
-
-    cout << "Rotacionando!" << endl;
 
     int xx = figura[selecaoPoligono].x[selecaoVertice], yy = figura[selecaoPoligono].y[selecaoVertice];
 
@@ -206,7 +200,7 @@ void rotacao(){
 }
 
 void translate(){
-    cout << "Entrou no translate!" << endl;
+    //cout << "Entrou no translate!" << endl;
 
     if(selecaoPoligono != -1){
         for(int i =0; i<figura[selecaoPoligono].vertices; i++){
@@ -251,11 +245,11 @@ bool pontonoPoligono(int x, int y, int poli){
 }
 
 bool verificaConvexo(){
-    cout << "Entrou no verifica convexo!" << endl;
+    //cout << "Entrou no verifica convexo!" << endl;
     bool sinal, sinalAux;
     int produtoVetorial = 0;
     int pvertices = figura[pol].vertices;
-    cout << "For vai de 0 a " << pvertices << endl;
+    //cout << "For vai de 0 a " << pvertices << endl;
     for(int i=0; i<pvertices-1;i++){
         //calculando produto vetorial
         int a = i-1, b = i, c = i+1;
@@ -305,7 +299,7 @@ void pegaCoordenada(int coordx, int coordy){ // Coord dos pontos do poligono
         figura[pol].x[coordenada-1] = coordx;
         figura[pol].y[coordenada-1] = coordy;
         unit(coordx, coordy, r, g, b);
-        cout << "Salvou coordenada " << coordenada << endl;
+        //cout << "Salvou coordenada " << coordenada << endl;
         //cout << "Conferindo x: Atual = " << coordx << " Primeiro = " << figura[pol].x[coordenada-1] << endl;
         //cout << "Conferindo y: Atual = " << coordy << " Primeiro = " << figura[pol].y[coordenada-1] << endl;
     }
@@ -340,9 +334,6 @@ void pegaCoordenada(int coordx, int coordy){ // Coord dos pontos do poligono
 
 void criarPoligono(){ // Cria poligono
     glColor3f(figura[pol].rp,figura[pol].gp,figura[pol].bp);
-    if (figura[pol].rotacoes!=0){
-        glRotatef(figura[pol].rotacoes, 0, 0, 1);
-    }
     if(figura[pol].preench == true){
         glBegin(GL_POLYGON);
             for(int i=0; i<figura[pol].vertices; i++){
@@ -360,12 +351,7 @@ void criarPoligono(){ // Cria poligono
     }
     glEnd();
     glFlush();
-    if(mod == 3){
-        //glTranslatef(-15,-15,0.0);
-    }/*
-    if(mod != 10){
-        pol++;
-    }*/
+
     cout << "Poligono " << pol+1 << " desenhado." << endl;
 }
 
@@ -439,23 +425,23 @@ void verificaClique(int coordx, int coordy){
         }
     }
     if (mod == 3){
-        cout << "valores do mouse elseif no motionfunc" << coordx << " e " << 600-coordy << endl;
+        //cout << "valores do mouse elseif no motionfunc" << coordx << " e " << 600-coordy << endl;
         tx = coordx - figura[selecaoPoligono].x[0];
         //cout << "TX: " << tx << " coordx: " << coordx << " x0: " << figura[selecaoPoligono].x[0] <<endl;
         ty = LINHAS - coordy - figura[selecaoPoligono].y[0];
         //ty = figura[selecaoPoligono].y[0] - coordy;
         //cout << "TY: " << tx << " coordy: " << coordy << " y0: " << figura[selecaoPoligono].y[0] <<endl;
-        cout << "valor do eixo 0 : x = " << figura[selecaoPoligono].x[0] << " y = " << figura[selecaoPoligono].x[0] << endl;
+        //cout << "valor do eixo 0 : x = " << figura[selecaoPoligono].x[0] << " y = " << figura[selecaoPoligono].x[0] << endl;
         translate();
     }
 }
 
 void selecionarVertice (int coordx, int coordy){
-    cout << "Entrou no selecionar vertices" << endl;
+    //cout << "Entrou no selecionar vertices" << endl;
     for(int i=0; i<figura[selecaoPoligono].vertices; i++){
             if (abs(coordx - figura[selecaoPoligono].x[i]) < 10 && abs(coordy - figura[selecaoPoligono].y[i]) < 10 ){
                 selecaoVertice = i;
-                cout << "Vertice Selecionado : " << selecaoVertice << endl;
+                cout << "Rotacao em torno do vertice : " << selecaoVertice << endl;
                 break;
             }
     }
@@ -468,7 +454,7 @@ void gerenciaMouse(int button, int state, int x, int y){
         if(mod != 3){
             coordy = (LINHAS-y);
         }
-        cout << "valores do mouse " << coordx << " e " << coordy << endl;
+        //cout << "valores do mouse " << coordx << " e " << coordy << endl;
         if (mod == 0 || mod == 2){
             corCelula(coordx, coordy, rn, gn, bn);
         }
@@ -530,6 +516,7 @@ void unit(int x, int y,double r, double g, double b){
 }
 
 void drawGrid(){
+    //cout << "Entrou no drawGrid" << endl;
     for(int x=0; x<1; x++){
         for(int y=0; y<(LINHAS-59)*MULT; y++){
             corCelula(x, y, rn, gn, bn);
@@ -548,8 +535,8 @@ void displayInicial(){
 
 void inicializaMenu(){
     GLint subMenu = glutCreateMenu(menu);
-    glutAddMenuEntry("+90o", 10);
-    glutAddMenuEntry("-90o", 11);
+    glutAddMenuEntry("Rotacao de +90o", 10);
+    glutAddMenuEntry("Rotacao de -90o", 11);
 
     glutCreateMenu(menu);
     glutAddMenuEntry("Criar Poligono", 1);
@@ -646,7 +633,6 @@ void init(){
         figura[i].vertices = 0;
         figura[i].x[i] = 0;
         figura[i].y[i] = 0;
-        figura[i].rotacoes = 0;
     }
 }
 
